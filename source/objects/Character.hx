@@ -336,8 +336,8 @@ class Character extends FlxSprite
 		}
 
 		var name:String = getAnimationName();
-		// 冻帧式（官方风格）：sing 唱动画播完后，若有 "-hold" 变体则自动切到它（长条期间保持生动唱姿），否则沿用 -loop
-		if(isAnimationFinished() && name.startsWith('sing') && !name.endsWith('-hold') && hasAnimation(name + '-hold') && !ClientPrefs.data.forceHoldAnimations)
+		// funk.in（forceHoldAnimations 开启）：sing 唱动画播完后若存在 "-hold" 变体自动切到它，保持长条唱姿生动（仅触发一次）
+		if(isAnimationFinished() && name.startsWith('sing') && !name.endsWith('-hold') && hasAnimation(name + '-hold') && ClientPrefs.data.forceHoldAnimations)
 			playAnim(name + '-hold');
 		else if(isAnimationFinished() && hasAnimation('$name-loop') && !ClientPrefs.data.forceHoldAnimations)
 			playAnim('$name-loop');

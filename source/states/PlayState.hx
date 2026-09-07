@@ -6644,8 +6644,18 @@ tempScore += '${lblScore}: ${songScore}';
 				var canPlay:Bool = true;
 				if(note.isSustainNote)
 				{
-					// 冻帧式（官方风格）：长条段不触发/切换角色唱动画，只续 holdTimer 保持头段姿态，避免多长条同按反复横跳
-					canPlay = false;
+					if(ClientPrefs.data.forceHoldAnimations)
+					{
+						// funk.in（“长按仅播放一次”）：长条段不重放/不切换角色动画，保持头段姿态
+						canPlay = false;
+					}
+					else
+					{
+						// 原版 Psych：有 -hold 用 -hold（循环），无则每段重放 sing
+						var holdAnim:String = animToPlay + '-hold';
+						if(char.animation.exists(holdAnim)) animToPlay = holdAnim;
+						if(char.getAnimationName() == holdAnim || char.getAnimationName() == holdAnim + '-loop') canPlay = false;
+					}
 				}
 
 				if(canPlay)
@@ -6767,10 +6777,20 @@ tempScore += '${lblScore}: ${songScore}';
 				{
 					var canPlay:Bool = true;
 					if(note.isSustainNote)
-					{
-						// 冻帧式（官方风格）：长条段不触发/切换角色唱动画，只续 holdTimer 保持头段姿态，避免多长条同按反复横跳
-						canPlay = false;
-					}
+						{
+							if(ClientPrefs.data.forceHoldAnimations)
+							{
+								// funk.in（“长按仅播放一次”）：长条段不重放/不切换角色动画，保持头段姿态
+								canPlay = false;
+							}
+							else
+							{
+								// 原版 Psych：有 -hold 用 -hold（循环），无则每段重放 sing
+								var holdAnim:String = animToPlay + '-hold';
+								if(char.animation.exists(holdAnim)) animToPlay = holdAnim;
+								if(char.getAnimationName() == holdAnim || char.getAnimationName() == holdAnim + '-loop') canPlay = false;
+							}
+						}
 
 				if(canPlay)
 				{
