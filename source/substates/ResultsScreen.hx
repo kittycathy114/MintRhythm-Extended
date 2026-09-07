@@ -217,6 +217,20 @@ class ResultsScreen extends FlxSubState
 		}
 		overlaySprite.addChild(contText);
 
+		// 修正底部信息位置：文本右缘贴齐画面右边距，底部贴齐底部边距。
+		// 之前 y 用了固定值 stageHeight - 60*scale，而提示是多行文本（约3行），
+		// 实际高度超出预留空间导致内容溢出屏幕底部。现按真实文本高度计算目标 y。
+		var contTextX:Float = contText.x;
+		var contTextY:Float = stageHeight - 60 * scale;
+		#if !mobile
+		if (Std.string(contText.text).length > 0)
+		{
+			var infoMargin:Float = 20 * scale;
+			contTextX = stageWidth - infoMargin - contText.textWidth;
+			contTextY = stageHeight - infoMargin - contText.textHeight;
+		}
+		#end
+
 		// 检查是否有回放数据
 		canReplay = PlayState.instance.replayData != null && PlayState.instance.replayData.length > 0;
 
@@ -259,7 +273,8 @@ class ResultsScreen extends FlxSubState
 		// OpenFL 对象的动画
 		FlxTween.num(-80 * scale, 20 * scale, 0.5, {ease: FlxEase.expoInOut}, (val) -> text.y = val);
 		FlxTween.num(-100 * scale, comboTextY, 0.5, {ease: FlxEase.expoInOut}, (val) -> comboText.y = val);
-		FlxTween.num(stageHeight + 60 * scale, stageHeight - 60 * scale, 0.5, {ease: FlxEase.expoInOut}, (val) -> contText.y = val);
+		FlxTween.num(stageHeight + 80 * scale, contTextY, 0.5, {ease: FlxEase.expoInOut}, (val) -> contText.y = val);
+		contText.x = contTextX;
 		FlxTween.num(stageHeight + 60 * scale, stageHeight - 50 * scale, 0.5, {ease: FlxEase.expoInOut}, (val) -> settingsText.y = val);
 		FlxTween.num(0, 1.0, 0.5, {ease: FlxEase.expoInOut}, (val) -> graph.alpha = val);
 
