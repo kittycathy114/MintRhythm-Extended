@@ -2545,25 +2545,32 @@ tempScore += '${lblScore}: ${songScore}';
 			return Paths.loadSongAudio(song, fileBase, mod) != null;
 		}
 
-		function findModWithSong(song:String):String
+		// 探测某 mod 是否含有该曲音频：含 SpecialInst/SpecialVocal 的带后缀文件也算（与 ChartingState/FreeplayState 一致）。
+		function modHasSong(mod:String, song:String):Bool
 		{
-			var found:String = '';
+			var si:String = (songData.specialInst != null && songData.specialInst.length > 0) ? songData.specialInst : null;
+			var sv:String = (songData.specialVocal != null && songData.specialVocal.length > 0) ? songData.specialVocal : null;
+			if (modHasAudio(mod, song, 'Inst') || modHasAudio(mod, song, 'Voices')) return true;
+			if (si != null && modHasAudio(mod, song, 'Inst-${si}')) return true;
+			if (sv != null && modHasAudio(mod, song, 'Voices-${sv}')) return true;
+			return false;
+		}
+
+		var audioModDir:String = PlayState._lastLoadedModDirectory;
+		if (!modHasSong(audioModDir, songData.song))
+		{
+			audioModDir = '';
 			#if MODS_ALLOWED
 			for (mod in Mods.getModDirectories())
 			{
-				if (modHasAudio(mod, song, 'Inst') || modHasAudio(mod, song, 'Voices'))
+				if (modHasSong(mod, songData.song))
 				{
-					found = mod;
+					audioModDir = mod;
 					break;
 				}
 			}
 			#end
-			return found;
 		}
-
-		var audioModDir:String = PlayState._lastLoadedModDirectory;
-		if (!modHasAudio(audioModDir, songData.song, 'Inst') && !modHasAudio(audioModDir, songData.song, 'Voices'))
-			audioModDir = findModWithSong(songData.song);
 		if (audioModDir == null) audioModDir = '';
 
 		Mods.currentModDirectory = audioModDir;
