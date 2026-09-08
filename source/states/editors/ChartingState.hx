@@ -6340,8 +6340,7 @@ for (i in 0...GRID_PLAYERS)
 				if (child is Button)
 					child.styleString = 'font-name: $font; font-size: 12px; min-width: 100px; background-color: $bgColor; color: $fgColor;';
 			}
-			haxeMenuBar.invalidateComponentStyle(true);
-			haxeMenuBar.invalidateComponent();
+			haxeMenuBar.syncComponentValidation(false);
 			// 主题切换重设了按钮 styleString，若此时有菜单打开，重新套用其按钮高亮
 			if (haxeMenuOpenMenu != null)
 				setMenuButtonHighlight(haxeMenuOpenMenu, true);
